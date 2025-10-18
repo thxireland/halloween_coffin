@@ -1,0 +1,29 @@
+relays:
+  smoke_machine: 25
+  skull: 6
+  figures: 5
+  motor_forward: 16
+  motor_backwards: 20
+
+ultra_sonics:
+  spider_one:
+    - 24
+    - 23
+  spider_two:
+    - 12
+    - 21
+  # coffin_one:
+  #   - 17
+  #   - 27
+
+lights:
+  coffin: "192.168.1.210"
+  garden: "192.168.1.212"
+
+sounds:
+  opening: "/home/halloween/Desktop/halloween_project/music_files/opening.mp3"
+  thump: "/home/halloween/Desktop/halloween_project/music_files/creepy.mp3"
+  creepy: "/home/halloween/Desktop/halloween_project/music_files/thump.mp3"
+
+coffin_distance: 100
+walking_distance: 400

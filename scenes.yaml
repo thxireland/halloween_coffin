@@ -1,0 +1,145 @@
+coffin_opening:
+  4:
+    type: motor
+    forward: True
+  5:
+    type: lights
+    red: 255
+    green: 0
+    blue: 0
+    flash: True
+    light: coffin
+  6:
+    type: lights
+    red: 255
+    green: 165
+    blue: 0
+    light: garden
+  7:
+    type: music
+    track: opening
+  8:
+    type: sleep
+    time: 4
+  9:
+    type: relay
+    relay: smoke_machine
+    high: True
+  10:
+    type: sleep
+    time: 4
+  11:
+    type: relay
+    relay: smoke_machine
+  12:
+    type: sleep
+    time: 4
+  13:
+    type: relay
+    relay: skull
+    high: True
+  14:
+    type: lights
+    red: 255
+    green: 0
+    blue: 0
+    off: True
+    light: coffin
+  15:
+    type: lights
+    red: 255
+    green: 165
+    blue: 0
+    off: True
+    light: garden
+  16:
+    type: sleep
+    time: 2
+  20:
+    type: lights
+    red: 255
+    green: 0
+    blue: 0
+    on: True
+    light: coffin
+  21:
+    type: lights
+    red: 255
+    green: 0
+    blue: 0
+    on: True
+    light: garden
+  22:
+    type: motor
+  23:
+    type: music
+    track: thump
+  17:
+    type: relay
+    relay: figures
+    high: True
+  18:
+    type: sleep
+    time: 1
+  19:
+    type: relay
+    relay: figures
+  24:
+    type: sleep
+    time: 2
+  25:
+    type: motor
+    backwards: True
+  26:
+    type: sleep
+    time: 15
+  27:
+    type: relay
+    relay: skull
+    
+getting_close:
+  1:
+    type: lights
+    red: 255
+    green: 165
+    blue: 0
+    on: True
+    light: coffin
+  2:
+    type: lights
+    red: 255
+    green: 75
+    blue: 0
+    on: True
+    light: garden
+  3:
+    type: music
+    track: creepy
+
+nothing:
+  1:
+    type: lights
+    red: 0
+    green: 255
+    blue: 0
+    on: True
+    light: coffin
+  2:
+    type: lights
+    red: 60
+    green: 255
+    blue: 0
+    on: True
+    light: garden
+  3:
+    type: relay
+    relay: smoke_machine
+  4:
+    type: relay
+    relay: skull
+  5:
+    type: relay
+    relay: figures
+  6:
+    type: motor
+    backwards: True
