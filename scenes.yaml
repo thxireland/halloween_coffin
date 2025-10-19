@@ -1,145 +1,1416 @@
-coffin_opening:
-  4:
-    type: motor
-    forward: True
-  5:
-    type: lights
-    red: 255
-    green: 0
-    blue: 0
-    flash: True
-    light: coffin
-  6:
-    type: lights
-    red: 255
-    green: 165
-    blue: 0
-    light: garden
-  7:
-    type: music
-    track: opening
-  8:
-    type: sleep
-    time: 4
-  9:
-    type: relay
-    relay: smoke_machine
-    high: True
-  10:
-    type: sleep
-    time: 4
-  11:
-    type: relay
-    relay: smoke_machine
-  12:
-    type: sleep
-    time: 4
-  13:
-    type: relay
-    relay: skull
-    high: True
-  14:
-    type: lights
-    red: 255
-    green: 0
-    blue: 0
-    off: True
-    light: coffin
-  15:
-    type: lights
-    red: 255
-    green: 165
-    blue: 0
-    off: True
-    light: garden
-  16:
-    type: sleep
-    time: 2
-  20:
-    type: lights
-    red: 255
-    green: 0
-    blue: 0
-    on: True
-    light: coffin
-  21:
-    type: lights
-    red: 255
-    green: 0
-    blue: 0
-    on: True
-    light: garden
-  22:
-    type: motor
-  23:
-    type: music
-    track: thump
-  17:
-    type: relay
-    relay: figures
-    high: True
-  18:
-    type: sleep
-    time: 1
-  19:
-    type: relay
-    relay: figures
-  24:
-    type: sleep
-    time: 2
-  25:
-    type: motor
-    backwards: True
-  26:
-    type: sleep
-    time: 15
-  27:
-    type: relay
-    relay: skull
-    
-getting_close:
-  1:
-    type: lights
-    red: 255
-    green: 165
-    blue: 0
-    on: True
-    light: coffin
-  2:
-    type: lights
-    red: 255
-    green: 75
-    blue: 0
-    on: True
-    light: garden
-  3:
-    type: music
-    track: creepy
+# Halloween Coffin Scenes Configuration
+# This file defines the sequence of effects for the Halloween coffin
 
-nothing:
-  1:
-    type: lights
-    red: 0
-    green: 255
-    blue: 0
-    on: True
-    light: coffin
-  2:
-    type: lights
-    red: 60
-    green: 255
-    blue: 0
-    on: True
-    light: garden
-  3:
-    type: relay
-    relay: smoke_machine
-  4:
-    type: relay
-    relay: skull
-  5:
-    type: relay
-    relay: figures
-  6:
-    type: motor
-    backwards: True
+# Global settings
+settings:
+  sequence_name: "Halloween Coffin Sequence"
+  version: "1.0"
+  description: "Main Halloween sequence triggered by proximity detection"
+  cooldown_after_sequence: 30  # seconds to wait before allowing another sequence
+  random_scene_mode: true  # Enable to randomly select scenes
+  random_scene_list:  # Scenes to randomly choose from (optional - if empty, uses all available scenes)
+    - "halloween_sequence"
+    - "vampire_awakening"
+    - "zombie_escape"
+    - "ghost_apparition"
+    - "demon_summoning"
+    - "mummy_unwrapping"
+    - "lightning_storm"
+    - "rainbow_magic"
+
+# Hardware configuration
+hardware:
+  motor:
+    forward_pin: 5
+    reverse_pin: 6
+  relays:
+    skull:
+      pin: 16
+      active_high: true
+    smoke:
+      pin: 20
+      active_high: true
+  sensors:
+    ultrasonic_1:
+      trigger_pin: 8
+      echo_pin: 7
+    ultrasonic_2:
+      trigger_pin: 23
+      echo_pin: 24
+  lights:
+    govee:
+      ip: "192.168.1.210"
+  audio:
+    base_path: "/home/halloweencoffin/halloween_coffin/music_files"
+    files:
+      opening: "opening.mp3"
+      creepy: "creepy.mp3"
+      thump: "thump.mp3"
+
+# Detection thresholds
+detection:
+  distance_threshold_near: 50  # cm - triggers sequence
+  distance_threshold_far: 100  # cm - monitoring range
+  sensor_reading_interval: 0.5  # seconds between readings
+  max_sensor_retries: 5
+  default_safe_distance: 200.0  # cm
+
+# Main Halloween sequence
+scenes:
+  halloween_sequence:
+    name: "Main Halloween Sequence"
+    description: "Complete Halloween coffin sequence"
+    steps:
+      - step: 1
+        name: "Orange Flashing Lights and Opening Sound"
+        description: "Initial attention-grabbing effect"
+        duration: 6  # seconds
+        effects:
+          lights:
+            color: [150, 60, 0]  # RGB values
+            flash: true
+            flash_amount: 10
+          audio:
+            file: "opening"
+            volume: 0.8
+          motor:
+            action: "open"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Step 1: Orange flashing lights and opening sound"
+
+      - step: 2
+        name: "Red Lights and Smoke Effect"
+        description: "Dramatic red lighting with smoke"
+        duration: 2  # seconds
+        effects:
+          lights:
+            color: [255, 0, 0]  # RGB values
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 2
+        logging:
+          level: "info"
+          message: "Step 2: Red lights and smoke effect"
+
+      - step: 3
+        name: "Skull Activation"
+        description: "Skull mechanism activation"
+        duration: 6  # seconds
+        effects:
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Step 3: Skull activation"
+
+      - step: 4
+        name: "Creepy Sound and Door Closing"
+        description: "Creepy audio with door closing"
+        duration: 3  # seconds
+        effects:
+          audio:
+            file: "creepy"
+            volume: 0.9
+          motor:
+            action: "close"
+            duration: 6
+        timing:
+          audio_delay: 1  # seconds before door starts closing
+          door_delay: 2  # seconds after door closes
+        logging:
+          level: "info"
+          message: "Step 4: Creepy sound and door closing"
+
+      - step: 5
+        name: "Green Lights Cooldown"
+        description: "Calm green lights for cooldown period"
+        duration: 10  # seconds
+        effects:
+          lights:
+            color: [0, 255, 0]  # RGB values
+            flash: false
+        logging:
+          level: "info"
+          message: "Step 5: Green lights for cooldown"
+  vampire_awakening:
+    name: "Vampire Awakening"
+    description: "Slow, dramatic vampire rising from coffin"
+    steps:
+      - step: 1
+        name: "Mysterious Opening"
+        duration: 8
+        effects:
+          lights:
+            color: [100, 0, 100]  # Deep purple
+            flash: false
+          audio:
+            file: "opening"
+            volume: 0.6
+          motor:
+            action: "open"
+            duration: 8
+        logging:
+          level: "info"
+          message: "Vampire awakening: Mysterious coffin opening"
+      
+      - step: 2
+        name: "Blood Red Mist"
+        duration: 4
+        effects:
+          lights:
+            color: [200, 0, 0]  # Blood red
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Vampire awakening: Blood red mist"
+      
+      - step: 3
+        name: "Vampire Rising"
+        duration: 6
+        effects:
+          lights:
+            color: [255, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 8
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Vampire awakening: Vampire rising"
+      
+      - step: 4
+        name: "Dramatic Close"
+        duration: 5
+        effects:
+          lights:
+            color: [50, 0, 50]  # Dark purple
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        timing:
+          audio_delay: 2
+        logging:
+          level: "info"
+          message: "Vampire awakening: Dramatic coffin closing"
+
+  zombie_escape:
+    name: "Zombie Escape"
+    description: "Fast, chaotic zombie breaking out"
+    steps:
+      - step: 1
+        name: "Zombie Stirring"
+        duration: 3
+        effects:
+          lights:
+            color: [0, 100, 0]  # Sickly green
+            flash: true
+            flash_amount: 15
+          audio:
+            file: "thump"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Zombie escape: Zombie stirring"
+      
+      - step: 2
+        name: "Violent Breakout"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 100, 0]  # Orange
+            flash: true
+            flash_amount: 20
+          motor:
+            action: "open"
+            duration: 2
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 2
+        logging:
+          level: "info"
+          message: "Zombie escape: Violent breakout"
+      
+      - step: 3
+        name: "Zombie Moan"
+        duration: 4
+        effects:
+          lights:
+            color: [0, 150, 0]  # Bright green
+            flash: false
+          audio:
+            file: "creepy"
+            volume: 0.9
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Zombie escape: Zombie moaning"
+      
+      - step: 4
+        name: "Quick Retreat"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 50, 0]  # Dark green
+            flash: false
+          motor:
+            action: "close"
+            duration: 3
+        logging:
+          level: "info"
+          message: "Zombie escape: Quick retreat"
+
+  ghost_apparition:
+    name: "Ghost Apparition"
+    description: "Ethereal ghost floating and disappearing"
+    steps:
+      - step: 1
+        name: "Ethereal Opening"
+        duration: 6
+        effects:
+          lights:
+            color: [200, 200, 255]  # Ghostly white-blue
+            flash: true
+            flash_amount: 12
+          motor:
+            action: "open"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Ghost apparition: Ethereal opening"
+      
+      - step: 2
+        name: "Ghostly Mist"
+        duration: 5
+        effects:
+          lights:
+            color: [150, 150, 255]  # Pale blue
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 5
+          audio:
+            file: "creepy"
+            volume: 0.7
+        logging:
+          level: "info"
+          message: "Ghost apparition: Ghostly mist"
+      
+      - step: 3
+        name: "Floating Skull"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 255, 255]  # Pure white
+            flash: true
+            flash_amount: 6
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Ghost apparition: Floating skull"
+      
+      - step: 4
+        name: "Fade Away"
+        duration: 6
+        effects:
+          lights:
+            color: [100, 100, 200]  # Fading blue
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Ghost apparition: Fading away"
+
+  demon_summoning:
+    name: "Demon Summoning"
+    description: "Dark ritual with demonic effects"
+    steps:
+      - step: 1
+        name: "Ritual Beginning"
+        duration: 4
+        effects:
+          lights:
+            color: [100, 0, 0]  # Dark red
+            flash: true
+            flash_amount: 8
+          audio:
+            file: "opening"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Demon summoning: Ritual beginning"
+      
+      - step: 2
+        name: "Coffin Opens"
+        duration: 5
+        effects:
+          lights:
+            color: [150, 0, 0]  # Brighter red
+            flash: false
+          motor:
+            action: "open"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Demon summoning: Coffin opens"
+      
+      - step: 3
+        name: "Demonic Smoke"
+        duration: 3
+        effects:
+          lights:
+            color: [200, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 10
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 3
+        logging:
+          level: "info"
+          message: "Demon summoning: Demonic smoke"
+      
+      - step: 4
+        name: "Demon Emerges"
+        duration: 6
+        effects:
+          lights:
+            color: [255, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 15
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 6
+          audio:
+            file: "creepy"
+            volume: 1.0
+        logging:
+          level: "info"
+          message: "Demon summoning: Demon emerges"
+      
+      - step: 5
+        name: "Ritual Complete"
+        duration: 4
+        effects:
+          lights:
+            color: [50, 0, 0]  # Dark red
+            flash: false
+          motor:
+            action: "close"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Demon summoning: Ritual complete"
+
+  mummy_unwrapping:
+    name: "Mummy Unwrapping"
+    description: "Slow, ancient mummy awakening"
+    steps:
+      - step: 1
+        name: "Ancient Stirring"
+        duration: 7
+        effects:
+          lights:
+            color: [150, 100, 50]  # Sandy brown
+            flash: false
+          audio:
+            file: "opening"
+            volume: 0.6
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Ancient stirring"
+      
+      - step: 2
+        name: "Slow Opening"
+        duration: 8
+        effects:
+          lights:
+            color: [200, 150, 100]  # Lighter brown
+            flash: true
+            flash_amount: 4
+          motor:
+            action: "open"
+            duration: 8
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Slow opening"
+      
+      - step: 3
+        name: "Dust Cloud"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 200, 150]  # Dusty tan
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Dust cloud"
+      
+      - step: 4
+        name: "Mummy Awakens"
+        duration: 5
+        effects:
+          lights:
+            color: [255, 255, 200]  # Pale yellow
+            flash: true
+            flash_amount: 6
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 5
+          audio:
+            file: "creepy"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Mummy awakens"
+      
+      - step: 5
+        name: "Return to Rest"
+        duration: 6
+        effects:
+          lights:
+            color: [100, 75, 50]  # Dark brown
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Return to rest"
+
+  lightning_storm:
+    name: "Lightning Storm"
+    description: "Dramatic lightning effects with thunder"
+    steps:
+      - step: 1
+        name: "Storm Begins"
+        duration: 3
+        effects:
+          lights:
+            color: [100, 100, 100]  # Gray
+            flash: true
+            flash_amount: 20
+          audio:
+            file: "thump"
+            volume: 0.9
+        logging:
+          level: "info"
+          message: "Lightning storm: Storm begins"
+      
+      - step: 2
+        name: "Coffin Opens"
+        duration: 4
+        effects:
+          lights:
+            color: [200, 200, 255]  # Lightning white
+            flash: true
+            flash_amount: 25
+          motor:
+            action: "open"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Coffin opens"
+      
+      - step: 3
+        name: "Thunder and Lightning"
+        duration: 5
+        effects:
+          lights:
+            color: [255, 255, 255]  # Bright white
+            flash: true
+            flash_amount: 30
+          audio:
+            file: "creepy"
+            volume: 1.0
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Lightning storm: Thunder and lightning"
+      
+      - step: 4
+        name: "Skull in Lightning"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 255, 200]  # Yellow-white
+            flash: true
+            flash_amount: 20
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Skull in lightning"
+      
+      - step: 5
+        name: "Storm Ends"
+        duration: 3
+        effects:
+          lights:
+            color: [50, 50, 50]  # Dark gray
+            flash: false
+          motor:
+            action: "close"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Storm ends"
+
+  rainbow_magic:
+    name: "Rainbow Magic"
+    description: "Colorful, magical sequence"
+    steps:
+      - step: 1
+        name: "Magic Opening"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 0, 255]  # Magenta
+            flash: true
+            flash_amount: 8
+          motor:
+            action: "open"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magic opening"
+      
+      - step: 2
+        name: "Red Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 0, 0]  # Red
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Red magic"
+      
+      - step: 3
+        name: "Orange Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 128, 0]  # Orange
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Orange magic"
+      
+      - step: 4
+        name: "Yellow Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 255, 0]  # Yellow
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Yellow magic"
+      
+      - step: 5
+        name: "Green Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 255, 0]  # Green
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Green magic"
+      
+      - step: 6
+        name: "Blue Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 0, 255]  # Blue
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Blue magic"
+      
+      - step: 7
+        name: "Purple Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [128, 0, 255]  # Purple
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Purple magic"
+      
+      - step: 8
+        name: "Magical Skull"
+        duration: 3
+        effects:
+          lights:
+            color: [255, 255, 255]  # White
+            flash: true
+            flash_amount: 10
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 3
+          audio:
+            file: "creepy"
+            volume: 0.7
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magical skull"
+      
+      - step: 9
+        name: "Magic Fade"
+        duration: 4
+        effects:
+          lights:
+            color: [100, 100, 255]  # Light blue
+            flash: false
+          motor:
+            action: "close"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magic fades"
+
+
+# Alternative sequences
+alternative_sequences:
+  quick_scare:
+    name: "Quick Scare"
+    description: "Shortened version for quick scares"
+    steps:
+      - step: 1
+        name: "Quick Flash"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 0, 0]
+            flash: true
+            flash_amount: 5
+          audio:
+            file: "thump"
+            volume: 0.7
+
+  maintenance_mode:
+    name: "Maintenance Mode"
+    description: "Safe mode for testing and maintenance"
+    steps:
+      - step: 1
+        name: "Test Lights"
+        duration: 5
+        effects:
+          lights:
+            color: [0, 0, 255]
+            flash: false
+        logging:
+          level: "info"
+          message: "Maintenance mode: Testing lights"
+
+  # New Creative Scenes
+  
+  vampire_awakening:
+    name: "Vampire Awakening"
+    description: "Slow, dramatic vampire rising from coffin"
+    steps:
+      - step: 1
+        name: "Mysterious Opening"
+        duration: 8
+        effects:
+          lights:
+            color: [100, 0, 100]  # Deep purple
+            flash: false
+          audio:
+            file: "opening"
+            volume: 0.6
+          motor:
+            action: "open"
+            duration: 8
+        logging:
+          level: "info"
+          message: "Vampire awakening: Mysterious coffin opening"
+      
+      - step: 2
+        name: "Blood Red Mist"
+        duration: 4
+        effects:
+          lights:
+            color: [200, 0, 0]  # Blood red
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Vampire awakening: Blood red mist"
+      
+      - step: 3
+        name: "Vampire Rising"
+        duration: 6
+        effects:
+          lights:
+            color: [255, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 8
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Vampire awakening: Vampire rising"
+      
+      - step: 4
+        name: "Dramatic Close"
+        duration: 5
+        effects:
+          lights:
+            color: [50, 0, 50]  # Dark purple
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        timing:
+          audio_delay: 2
+        logging:
+          level: "info"
+          message: "Vampire awakening: Dramatic coffin closing"
+
+  zombie_escape:
+    name: "Zombie Escape"
+    description: "Fast, chaotic zombie breaking out"
+    steps:
+      - step: 1
+        name: "Zombie Stirring"
+        duration: 3
+        effects:
+          lights:
+            color: [0, 100, 0]  # Sickly green
+            flash: true
+            flash_amount: 15
+          audio:
+            file: "thump"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Zombie escape: Zombie stirring"
+      
+      - step: 2
+        name: "Violent Breakout"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 100, 0]  # Orange
+            flash: true
+            flash_amount: 20
+          motor:
+            action: "open"
+            duration: 2
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 2
+        logging:
+          level: "info"
+          message: "Zombie escape: Violent breakout"
+      
+      - step: 3
+        name: "Zombie Moan"
+        duration: 4
+        effects:
+          lights:
+            color: [0, 150, 0]  # Bright green
+            flash: false
+          audio:
+            file: "creepy"
+            volume: 0.9
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Zombie escape: Zombie moaning"
+      
+      - step: 4
+        name: "Quick Retreat"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 50, 0]  # Dark green
+            flash: false
+          motor:
+            action: "close"
+            duration: 3
+        logging:
+          level: "info"
+          message: "Zombie escape: Quick retreat"
+
+  ghost_apparition:
+    name: "Ghost Apparition"
+    description: "Ethereal ghost floating and disappearing"
+    steps:
+      - step: 1
+        name: "Ethereal Opening"
+        duration: 6
+        effects:
+          lights:
+            color: [200, 200, 255]  # Ghostly white-blue
+            flash: true
+            flash_amount: 12
+          motor:
+            action: "open"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Ghost apparition: Ethereal opening"
+      
+      - step: 2
+        name: "Ghostly Mist"
+        duration: 5
+        effects:
+          lights:
+            color: [150, 150, 255]  # Pale blue
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 5
+          audio:
+            file: "creepy"
+            volume: 0.7
+        logging:
+          level: "info"
+          message: "Ghost apparition: Ghostly mist"
+      
+      - step: 3
+        name: "Floating Skull"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 255, 255]  # Pure white
+            flash: true
+            flash_amount: 6
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Ghost apparition: Floating skull"
+      
+      - step: 4
+        name: "Fade Away"
+        duration: 6
+        effects:
+          lights:
+            color: [100, 100, 200]  # Fading blue
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Ghost apparition: Fading away"
+
+  demon_summoning:
+    name: "Demon Summoning"
+    description: "Dark ritual with demonic effects"
+    steps:
+      - step: 1
+        name: "Ritual Beginning"
+        duration: 4
+        effects:
+          lights:
+            color: [100, 0, 0]  # Dark red
+            flash: true
+            flash_amount: 8
+          audio:
+            file: "opening"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Demon summoning: Ritual beginning"
+      
+      - step: 2
+        name: "Coffin Opens"
+        duration: 5
+        effects:
+          lights:
+            color: [150, 0, 0]  # Brighter red
+            flash: false
+          motor:
+            action: "open"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Demon summoning: Coffin opens"
+      
+      - step: 3
+        name: "Demonic Smoke"
+        duration: 3
+        effects:
+          lights:
+            color: [200, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 10
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 3
+        logging:
+          level: "info"
+          message: "Demon summoning: Demonic smoke"
+      
+      - step: 4
+        name: "Demon Emerges"
+        duration: 6
+        effects:
+          lights:
+            color: [255, 0, 0]  # Bright red
+            flash: true
+            flash_amount: 15
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 6
+          audio:
+            file: "creepy"
+            volume: 1.0
+        logging:
+          level: "info"
+          message: "Demon summoning: Demon emerges"
+      
+      - step: 5
+        name: "Ritual Complete"
+        duration: 4
+        effects:
+          lights:
+            color: [50, 0, 0]  # Dark red
+            flash: false
+          motor:
+            action: "close"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Demon summoning: Ritual complete"
+
+  mummy_unwrapping:
+    name: "Mummy Unwrapping"
+    description: "Slow, ancient mummy awakening"
+    steps:
+      - step: 1
+        name: "Ancient Stirring"
+        duration: 7
+        effects:
+          lights:
+            color: [150, 100, 50]  # Sandy brown
+            flash: false
+          audio:
+            file: "opening"
+            volume: 0.6
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Ancient stirring"
+      
+      - step: 2
+        name: "Slow Opening"
+        duration: 8
+        effects:
+          lights:
+            color: [200, 150, 100]  # Lighter brown
+            flash: true
+            flash_amount: 4
+          motor:
+            action: "open"
+            duration: 8
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Slow opening"
+      
+      - step: 3
+        name: "Dust Cloud"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 200, 150]  # Dusty tan
+            flash: false
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Dust cloud"
+      
+      - step: 4
+        name: "Mummy Awakens"
+        duration: 5
+        effects:
+          lights:
+            color: [255, 255, 200]  # Pale yellow
+            flash: true
+            flash_amount: 6
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 5
+          audio:
+            file: "creepy"
+            volume: 0.8
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Mummy awakens"
+      
+      - step: 5
+        name: "Return to Rest"
+        duration: 6
+        effects:
+          lights:
+            color: [100, 75, 50]  # Dark brown
+            flash: false
+          motor:
+            action: "close"
+            duration: 6
+        logging:
+          level: "info"
+          message: "Mummy unwrapping: Return to rest"
+
+  lightning_storm:
+    name: "Lightning Storm"
+    description: "Dramatic lightning effects with thunder"
+    steps:
+      - step: 1
+        name: "Storm Begins"
+        duration: 3
+        effects:
+          lights:
+            color: [100, 100, 100]  # Gray
+            flash: true
+            flash_amount: 20
+          audio:
+            file: "thump"
+            volume: 0.9
+        logging:
+          level: "info"
+          message: "Lightning storm: Storm begins"
+      
+      - step: 2
+        name: "Coffin Opens"
+        duration: 4
+        effects:
+          lights:
+            color: [200, 200, 255]  # Lightning white
+            flash: true
+            flash_amount: 25
+          motor:
+            action: "open"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Coffin opens"
+      
+      - step: 3
+        name: "Thunder and Lightning"
+        duration: 5
+        effects:
+          lights:
+            color: [255, 255, 255]  # Bright white
+            flash: true
+            flash_amount: 30
+          audio:
+            file: "creepy"
+            volume: 1.0
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 5
+        logging:
+          level: "info"
+          message: "Lightning storm: Thunder and lightning"
+      
+      - step: 4
+        name: "Skull in Lightning"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 255, 200]  # Yellow-white
+            flash: true
+            flash_amount: 20
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Skull in lightning"
+      
+      - step: 5
+        name: "Storm Ends"
+        duration: 3
+        effects:
+          lights:
+            color: [50, 50, 50]  # Dark gray
+            flash: false
+          motor:
+            action: "close"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Lightning storm: Storm ends"
+
+  rainbow_magic:
+    name: "Rainbow Magic"
+    description: "Colorful, magical sequence"
+    steps:
+      - step: 1
+        name: "Magic Opening"
+        duration: 4
+        effects:
+          lights:
+            color: [255, 0, 255]  # Magenta
+            flash: true
+            flash_amount: 8
+          motor:
+            action: "open"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magic opening"
+      
+      - step: 2
+        name: "Red Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 0, 0]  # Red
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Red magic"
+      
+      - step: 3
+        name: "Orange Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 128, 0]  # Orange
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Orange magic"
+      
+      - step: 4
+        name: "Yellow Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 255, 0]  # Yellow
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Yellow magic"
+      
+      - step: 5
+        name: "Green Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 255, 0]  # Green
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Green magic"
+      
+      - step: 6
+        name: "Blue Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [0, 0, 255]  # Blue
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Blue magic"
+      
+      - step: 7
+        name: "Purple Magic"
+        duration: 2
+        effects:
+          lights:
+            color: [128, 0, 255]  # Purple
+            flash: false
+        logging:
+          level: "info"
+          message: "Rainbow magic: Purple magic"
+      
+      - step: 8
+        name: "Magical Skull"
+        duration: 3
+        effects:
+          lights:
+            color: [255, 255, 255]  # White
+            flash: true
+            flash_amount: 10
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 3
+          audio:
+            file: "creepy"
+            volume: 0.7
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magical skull"
+      
+      - step: 9
+        name: "Magic Fade"
+        duration: 4
+        effects:
+          lights:
+            color: [100, 100, 255]  # Light blue
+            flash: false
+          motor:
+            action: "close"
+            duration: 4
+        logging:
+          level: "info"
+          message: "Rainbow magic: Magic fades"
+
+  emergency_test:
+    name: "Emergency Test"
+    description: "Quick test of all systems"
+    steps:
+      - step: 1
+        name: "Test Lights"
+        duration: 2
+        effects:
+          lights:
+            color: [255, 255, 0]  # Yellow
+            flash: true
+            flash_amount: 5
+        logging:
+          level: "info"
+          message: "Emergency test: Testing lights"
+      
+      - step: 2
+        name: "Test Motor"
+        duration: 3
+        effects:
+          motor:
+            action: "open"
+            duration: 1.5
+        logging:
+          level: "info"
+          message: "Emergency test: Testing motor open"
+      
+      - step: 3
+        name: "Test Relays"
+        duration: 2
+        effects:
+          relay:
+            name: "smoke"
+            action: "on"
+            duration: 1
+        logging:
+          level: "info"
+          message: "Emergency test: Testing smoke relay"
+      
+      - step: 4
+        name: "Test Skull"
+        duration: 2
+        effects:
+          relay:
+            name: "skull"
+            action: "on"
+            duration: 1
+        logging:
+          level: "info"
+          message: "Emergency test: Testing skull relay"
+      
+      - step: 5
+        name: "Test Audio"
+        duration: 2
+        effects:
+          audio:
+            file: "thump"
+            volume: 0.5
+        logging:
+          level: "info"
+          message: "Emergency test: Testing audio"
+      
+      - step: 6
+        name: "Close Motor"
+        duration: 2
+        effects:
+          motor:
+            action: "close"
+            duration: 1.5
+        logging:
+          level: "info"
+          message: "Emergency test: Closing motor"
+      
+      - step: 7
+        name: "Turn Off Lights"
+        duration: 1
+        effects:
+          lights:
+            color: [0, 0, 0]  # Off
+            flash: false
+        logging:
+          level: "info"
+          message: "Emergency test: Turning off lights"
+
+# Error handling configuration
+error_handling:
+  max_retries: 3
+  retry_delay: 1  # seconds
+  emergency_cleanup:
+    - action: "relay_off"
+      target: "smoke"
+    - action: "relay_off"
+      target: "skull"
+    - action: "motor_close"
+    - action: "lights_off"
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "/home/halloweencoffin/halloween_coffin/logs/coffin.log"
+  console: true
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
