@@ -19,6 +19,17 @@ def get_args():
     args = parser.parse_args()
     return args
 
+# Set up GPIO
+GPIO.setmode(GPIO.BCM)
+
+# Relay GPIO pins
+RELAY_PINS = [16, 20, 21]
+
+# Set up each relay pin as an output
+for pin in RELAY_PINS:
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.LOW)  # Ensure relays are off initially
+    
 args = get_args()
 
 configs = yaml.safe_load(open("./configs.yaml", "r"))

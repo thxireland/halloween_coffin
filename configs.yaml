@@ -1,17 +1,17 @@
 relays:
-  smoke_machine: 25
-  skull: 6
+  smoke_machine: 20
+  skull: 16
   figures: 5
-  motor_forward: 16
-  motor_backwards: 20
+  motor_forward: 13
+  motor_backwards: 19
 
 ultra_sonics:
   spider_one:
-    - 24
-    - 23
+    - 5
+    - 6
   spider_two:
-    - 12
-    - 21
+    - 23
+    - 24
   # coffin_one:
   #   - 17
   #   - 27
