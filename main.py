@@ -294,9 +294,6 @@ def get_shortest_distance() -> float:
                 min_distance = min(distance_1, distance_2)
                 logger.debug(f"Sensor readings: {distance_1:.1f}cm, {distance_2:.1f}cm -> {min_distance:.1f}cm")
                 return min_distance
-            else:
-                logger.warning(f"Invalid sensor readings: sensor1={distance_1}, sensor2={distance_2}")
-            
         except Exception as e:
             logger.error(f"Error reading sensor data (attempt {retry_count + 1}): {e}")
         
