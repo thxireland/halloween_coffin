@@ -2,7 +2,7 @@ import socket
 import json
 import time
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 
 class GoveeLight:
     """
@@ -52,7 +52,7 @@ class GoveeLight:
             return False
         except Exception as e:
             self.logger.error(f"Unexpected error sending command: {e}")
-            return False
+            return False  
 
     def turn_on(self) -> bool:
         """

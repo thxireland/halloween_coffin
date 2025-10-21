@@ -11,7 +11,9 @@ from plugins.music_player import MP3Player
 from scene_manager import SceneManager
 import logging
 import sys
+import yaml
 from typing import Optional, Dict, Any
+from pathlib import Path
 
 # Global scene manager
 scene_manager: Optional[SceneManager] = None
@@ -44,23 +46,35 @@ THUMP_SOUND: Optional[MP3Player] = None
 SYSTEM_INITIALIZED = False
 SEQUENCE_RUNNING = False
 
-# Default configuration (will be overridden by YAML)
-DEFAULT_CONFIG = {
-    "detection": {
-        "distance_threshold_near": 50,
-        "distance_threshold_far": 100,
-        "sensor_reading_interval": 0.5,
-        "max_sensor_retries": 5,
-        "default_safe_distance": 200.0
-    },
-    "hardware": {
-        "motor": {"forward_pin": 5, "reverse_pin": 6},
-        "relays": {"skull": {"pin": 16, "active_high": True}, "smoke": {"pin": 20, "active_high": True}},
-        "sensors": {"ultrasonic_1": {"trigger_pin": 8, "echo_pin": 7}, "ultrasonic_2": {"trigger_pin": 23, "echo_pin": 24}},
-        "lights": {"govee": {"ip": "192.168.1.210"}},
-        "audio": {"base_path": "/home/halloweencoffin/halloween_coffin/music_files", "files": {"opening": "opening.mp3", "creepy": "creepy.mp3", "thump": "thump.mp3"}}
-    }
-}
+# Global configuration - loaded from configs.yaml
+CONFIG: Optional[Dict[str, Any]] = None
+
+def load_config() -> Optional[Dict[str, Any]]:
+    """
+    Load configuration from configs.yaml file.
+    
+    Returns:
+        Dict containing configuration or None if failed to load
+    """
+    global CONFIG
+    try:
+        config_file = Path("configs.yaml")
+        if not config_file.exists():
+            logger.error(f"Configuration file not found: {config_file}")
+            return None
+        
+        with open(config_file, 'r') as file:
+            CONFIG = yaml.safe_load(file)
+        
+        logger.info(f"Configuration loaded from {config_file}")
+        return CONFIG
+        
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing YAML configuration: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Error loading configuration: {e}")
+        return None
 
 def initialize_system() -> bool:
     """
@@ -73,6 +87,11 @@ def initialize_system() -> bool:
     
     try:
         logger.info("Initializing Halloween Coffin System...")
+        
+        # Load configuration first
+        if load_config() is None:
+            logger.error("Failed to load configuration")
+            return False
         
         # Initialize scene manager
         scene_manager = SceneManager("scenes.yaml")
@@ -118,8 +137,8 @@ def initialize_hardware() -> bool:
     try:
         logger.info("Initializing hardware components...")
         
-        # Get hardware configuration
-        hw_config = scene_manager.get_hardware_config()
+        # Get hardware configuration from global CONFIG
+        hw_config = CONFIG.get('hardware', {})
         
         # Initialize motor
         motor_config = hw_config.get('motor', {})
@@ -290,7 +309,7 @@ def get_shortest_distance() -> float:
 
 def get_config_value(section: str, key: str, default_value: Any = None) -> Any:
     """
-    Get a configuration value from the scene manager.
+    Get a configuration value from the appropriate configuration source.
     
     Args:
         section: Configuration section name
@@ -300,16 +319,13 @@ def get_config_value(section: str, key: str, default_value: Any = None) -> Any:
     Returns:
         Configuration value or default
     """
-    if not scene_manager:
-        return default_value
-    
     try:
         if section == 'detection':
-            config = scene_manager.get_detection_config()
+            config = CONFIG.get('detection', {}) if CONFIG else {}
         elif section == 'hardware':
-            config = scene_manager.get_hardware_config()
+            config = CONFIG.get('hardware', {}) if CONFIG else {}
         elif section == 'settings':
-            config = scene_manager.get_settings()
+            config = scene_manager.get_settings() if scene_manager else {}
         else:
             return default_value
         

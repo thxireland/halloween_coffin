@@ -1,0 +1,44 @@
+# Halloween Coffin Hardware Configuration
+# This file contains all hardware and detection settings
+
+# Hardware configuration
+hardware:
+  motor:
+    forward_pin: 5
+    reverse_pin: 6
+  relays:
+    skull:
+      pin: 16
+      active_high: true
+    smoke:
+      pin: 20
+      active_high: true
+  sensors:
+    ultrasonic_1:
+      trigger_pin: 8
+      echo_pin: 7
+    ultrasonic_2:
+      trigger_pin: 23
+      echo_pin: 24
+  lights:
+    govee:
+      ip: "192.168.1.210"
+  audio:
+    base_path: "/home/halloweencoffin/halloween_coffin/music_files"
+    files:
+      opening: "opening.mp3"
+      creepy: "creepy.mp3"
+      thump: "thump.mp3"
+      zombie_scream: "zombie_scream.mp3"
+      ghost: "ghost.mp3"
+      demon_growl: "demon_growl.mp3"
+      loud_thunder_1: "loud_thunder_1.mp3"
+      loud_thunder_2: "loud_thunder_2.mp3"
+
+# Detection thresholds
+detection:
+  distance_threshold_near: 50  # cm - triggers sequence
+  distance_threshold_far: 100  # cm - monitoring range
+  sensor_reading_interval: 0.5  # seconds between readings
+  max_sensor_retries: 5
+  default_safe_distance: 200.0  # cm
