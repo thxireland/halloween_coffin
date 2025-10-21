@@ -18,42 +18,6 @@ settings:
     - "lightning_storm"
     - "rainbow_magic"
 
-# Hardware configuration
-hardware:
-  motor:
-    forward_pin: 5
-    reverse_pin: 6
-  relays:
-    skull:
-      pin: 16
-      active_high: true
-    smoke:
-      pin: 20
-      active_high: true
-  sensors:
-    ultrasonic_1:
-      trigger_pin: 8
-      echo_pin: 7
-    ultrasonic_2:
-      trigger_pin: 23
-      echo_pin: 24
-  lights:
-    govee:
-      ip: "192.168.1.210"
-  audio:
-    base_path: "/home/halloweencoffin/halloween_coffin/music_files"
-    files:
-      opening: "opening.mp3"
-      creepy: "creepy.mp3"
-      thump: "thump.mp3"
-
-# Detection thresholds
-detection:
-  distance_threshold_near: 50  # cm - triggers sequence
-  distance_threshold_far: 100  # cm - monitoring range
-  sensor_reading_interval: 0.5  # seconds between readings
-  max_sensor_retries: 5
-  default_safe_distance: 200.0  # cm
 
 # Main Halloween sequence
 scenes:
@@ -252,7 +216,7 @@ scenes:
             color: [0, 150, 0]  # Bright green
             flash: false
           audio:
-            file: "creepy"
+            file: "zombie_scream"
             volume: 0.9
           relay:
             name: "smoke"
@@ -307,7 +271,7 @@ scenes:
             action: "on"
             duration: 5
           audio:
-            file: "creepy"
+            file: "ghost"
             volume: 0.7
         logging:
           level: "info"
@@ -358,6 +322,9 @@ scenes:
           audio:
             file: "opening"
             volume: 0.8
+          motor:
+            action: "open"
+            duration: 5
         logging:
           level: "info"
           message: "Demon summoning: Ritual beginning"
@@ -369,9 +336,9 @@ scenes:
           lights:
             color: [150, 0, 0]  # Brighter red
             flash: false
-          motor:
-            action: "open"
-            duration: 5
+          audio:
+            file: "demon_growl"
+            volume: 0.8
         logging:
           level: "info"
           message: "Demon summoning: Coffin opens"
@@ -404,9 +371,6 @@ scenes:
             name: "skull"
             action: "on"
             duration: 6
-          audio:
-            file: "creepy"
-            volume: 1.0
         logging:
           level: "info"
           message: "Demon summoning: Demon emerges"
@@ -549,7 +513,7 @@ scenes:
             flash: true
             flash_amount: 30
           audio:
-            file: "creepy"
+            file: "loud_thunder_1"
             volume: 1.0
           relay:
             name: "smoke"
@@ -571,6 +535,9 @@ scenes:
             name: "skull"
             action: "on"
             duration: 4
+          audio:
+            file: "loud_thunder_2"
+            volume: 1.0
         logging:
           level: "info"
           message: "Lightning storm: Skull in lightning"

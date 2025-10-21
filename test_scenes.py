@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
 Test script to demonstrate random scene selection functionality.
+Can also test specific scenes by passing a scene name as an argument.
 """
 
 import sys
 import logging
+import argparse
 from scene_manager import SceneManager
 
 # Configure logging
@@ -115,8 +117,113 @@ def test_scene_execution():
         logger.error(f"Error during scene execution test: {e}")
         return False
 
+def test_specific_scene(scene_name: str):
+    """Test a specific scene execution (dry run)."""
+    try:
+        scene_manager = SceneManager("scenes.yaml")
+        if not scene_manager.load_config():
+            logger.error("Failed to load configuration")
+            return False
+        
+        print(f"🎭 Testing Specific Scene: {scene_name}")
+        print("=" * 50)
+        
+        scene_config = scene_manager.get_scene(scene_name)
+        
+        if not scene_config:
+            print(f"❌ Scene '{scene_name}' not found!")
+            
+            # Show available scenes
+            available_scenes = scene_manager.get_all_scenes()
+            print(f"\n📋 Available scenes:")
+            for i, available_scene in enumerate(available_scenes, 1):
+                print(f"  {i:2d}. {available_scene}")
+            return False
+        
+        # Display scene information
+        scene_display_name = scene_config.get('name', scene_name)
+        description = scene_config.get('description', 'No description')
+        print(f"📝 Scene Name: {scene_display_name}")
+        print(f"📄 Description: {description}")
+        
+        steps = scene_config.get('steps', [])
+        print(f"\n📋 Steps: {len(steps)}")
+        
+        total_duration = 0
+        for i, step in enumerate(steps, 1):
+            step_name = step.get('name', f'Step {i}')
+            duration = step.get('duration', 0)
+            total_duration += duration
+            
+            print(f"\n  {i}. {step_name} ({duration}s)")
+            
+            effects = step.get('effects', {})
+            
+            # Show effects
+            if 'lights' in effects:
+                color = effects['lights'].get('color', [0, 0, 0])
+                flash = effects['lights'].get('flash', False)
+                print(f"     💡 Lights: RGB{color} {'(flash)' if flash else ''}")
+            
+            if 'audio' in effects:
+                file_name = effects['audio'].get('file', 'unknown')
+                volume = effects['audio'].get('volume', 0.5)
+                print(f"     🔊 Audio: {file_name} (vol: {volume})")
+            
+            if 'motor' in effects:
+                action = effects['motor'].get('action', 'unknown')
+                duration = effects['motor'].get('duration', 0)
+                print(f"     🚪 Motor: {action} ({duration}s)")
+            
+            if 'relay' in effects:
+                relay_name = effects['relay'].get('name', 'unknown')
+                action = effects['relay'].get('action', 'unknown')
+                print(f"     ⚡ Relay {relay_name}: {action}")
+        
+        print(f"\n⏱️  Total Duration: {total_duration}s")
+        print(f"✅ Scene '{scene_name}' test completed successfully!")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error during specific scene test: {e}")
+        return False
+
 def main():
     """Main test function."""
+    parser = argparse.ArgumentParser(
+        description="Test Halloween Coffin scenes",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python test_random_scenes.py                    # Run all random scene tests
+  python test_random_scenes.py halloween_sequence # Test specific scene
+  python test_random_scenes.py vampire_awakening  # Test specific scene
+        """
+    )
+    
+    parser.add_argument(
+        'scene',
+        nargs='?',
+        help='Specific scene name to test (optional)'
+    )
+    
+    args = parser.parse_args()
+    
+    # If a specific scene is provided, test only that scene
+    if args.scene:
+        print("🧪 Halloween Coffin Specific Scene Test 🧪")
+        print("=" * 60)
+        
+        success = test_specific_scene(args.scene)
+        
+        if success:
+            print(f"\n🎉 Scene test passed successfully!")
+            return 0
+        else:
+            print(f"\n❌ Scene test failed!")
+            return 1
+    
+    # Otherwise, run all tests
     print("🧪 Halloween Coffin Random Scene Test 🧪")
     print("=" * 60)
     
@@ -132,9 +239,11 @@ def main():
     
     if success:
         print(f"\n🎉 All tests passed successfully!")
-        print(f"\n💡 To run random scenes:")
-        print(f"   python run_scene.py random")
-        print(f"   python main.py  # (with random_scene_mode: true)")
+        print(f"\n💡 Usage examples:")
+        print(f"   python test_random_scenes.py                    # Run all tests")
+        print(f"   python test_random_scenes.py halloween_sequence # Test specific scene")
+        print(f"   python run_scene.py random                     # Run random scenes")
+        print(f"   python main.py                                 # (with random_scene_mode: true)")
         return 0
     else:
         print(f"\n❌ Some tests failed!")

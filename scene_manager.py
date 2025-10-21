@@ -127,20 +127,22 @@ class SceneManager:
     def get_hardware_config(self) -> Dict[str, Any]:
         """
         Get hardware configuration.
+        Note: Hardware config is now loaded from configs.yaml in main.py
         
         Returns:
-            Hardware configuration dictionary
+            Empty dictionary (hardware config moved to separate file)
         """
-        return self.config.get('hardware', {})
+        return {}
     
     def get_detection_config(self) -> Dict[str, Any]:
         """
         Get detection configuration.
+        Note: Detection config is now loaded from configs.yaml in main.py
         
         Returns:
-            Detection configuration dictionary
+            Empty dictionary (detection config moved to separate file)
         """
-        return self.config.get('detection', {})
+        return {}
     
     def get_settings(self) -> Dict[str, Any]:
         """
