@@ -39,6 +39,3 @@ hardware:
 detection:
   distance_threshold_near: 50  # cm - triggers sequence
   distance_threshold_far: 100  # cm - monitoring range
-  sensor_reading_interval: 0.5  # seconds between readings
-  max_sensor_retries: 5
-  default_safe_distance: 200.0  # cm
